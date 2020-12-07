@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
@@ -17,7 +18,7 @@ import java.util.List;
 /**
  * Created by felix on 16/11/19.
  */
-public class OptionMenuView extends LinearLayout implements PopLayout.OnBulgeChangeCallback, View.OnClickListener {
+public class OptionMenuView extends LinearLayout implements PopLayout.OnBulgeChangeCallback, View.OnTouchListener {
     private static final String TAG = "OptionMenuView";
 
     private int mBulgeSize = 0;
@@ -198,7 +199,7 @@ public class OptionMenuView extends LinearLayout implements PopLayout.OnBulgeCha
             params.width = LayoutParams.MATCH_PARENT;
         }
         itemView.setLayoutParams(params);
-        itemView.setOnClickListener(this);
+        itemView.setOnTouchListener(this);
         return itemView;
     }
 
@@ -254,19 +255,29 @@ public class OptionMenuView extends LinearLayout implements PopLayout.OnBulgeCha
         mMenuClickListener = listener;
     }
 
+
     @Override
-    public void onClick(View v) {
-        if (v.getTag() != null) {
-            try {
-                int position = Integer.parseInt((String) v.getTag());
-                if (mMenuClickListener != null && position >= 0 && position < mOptionMenus.size()) {
-                    mMenuClickListener.onOptionMenuClick(position, mOptionMenus.get(position));
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        switch (motionEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                break;
+            case MotionEvent.ACTION_UP:
+                if (view.getTag() != null) {
+                    try {
+                        int position = Integer.parseInt((String) view.getTag());
+                        if (mMenuClickListener != null && position >= 0 && position < mOptionMenus.size()) {
+                            mMenuClickListener.onOptionMenuClick(position, mOptionMenus.get(position));
+                        }
+                    } catch (Exception e) {
+                        Log.d(TAG, e.getMessage(), e);
+                    }
                 }
-            } catch (Exception e) {
-                Log.d(TAG, e.getMessage(), e);
-            }
+                break;
         }
+
+        return false;
     }
+
 
     public interface OnOptionMenuClickListener {
 
